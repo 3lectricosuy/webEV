@@ -3,7 +3,18 @@ import pandas as pd
 import os
 
 # --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="Catálogo 3léctricosUy", layout="wide")
+# --- TÍTULO CON LOGO ---
+col_logo, col_titulo = st.columns([1, 8]) # Ajusta los números para el tamaño
+
+with col_logo:
+    # Asegúrate de que el nombre del archivo coincida (ej: logo.png)
+    if os.path.exists("Logo.JPEG"):
+        st.image("Logo.JPEG", width=80) 
+    else:
+        st.write("🚗") # Emoji de respaldo por si el logo no carga
+
+with col_titulo:
+    st.title("EléctricosUy")
 
 # --- ESTILO CSS (Simple y Profesional: Degradado Azul) ---
 st.markdown("""
