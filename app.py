@@ -37,33 +37,47 @@ st.markdown("""
 BASE_PATH = os.getcwd()  # Esto detecta automáticamente dónde está la carpeta del proyecto
 VEHICULOS_PATH = "VEHICULOS"
 
-# --- CARGA DE DATOS ---
 @st.cache_data
 def cargar_base_de_datos():
     lista_vehiculos = []
-    if not os.path.exists(VEHICULOS_PATH):
+    
+    # 1. Verificación de carpeta
+    if not os.path.exists("VEHICULOS"):
+        st.error("🚨 La carpeta 'VEHICULOS' no se encuentra en el servidor.")
         return pd.DataFrame()
 
-    for folder_name in os.listdir(VEHICULOS_PATH):
-        folder_path = os.path.join(VEHICULOS_PATH, folder_name)
+    carpetas = [f for f in os.listdir("VEHICULOS") if os.path.isdir(os.path.join("VEHICULOS", f))]
+    
+    if not carpetas:
+        st.warning("📂 Se encontró la carpeta 'VEHICULOS', pero está vacía.")
+        return pd.DataFrame()
+
+    for folder_name in carpetas:
+        folder_path = os.path.join("VEHICULOS", folder_name)
         csv_path = os.path.join(folder_path, "datos.csv")
         
-        if os.path.isdir(folder_path) and os.path.exists(csv_path):
+        if os.path.exists(csv_path):
             try:
-                df_item = pd.read_csv(csv_path)
+                # 2. Intento de lectura robusto (detecta si es , o ;)
+                try:
+                    df_item = pd.read_csv(csv_path, sep=",", encoding='utf-8')
+                    if df_item.shape[1] <= 1: # Si leyó mal, probamos con ;
+                        df_item = pd.read_csv(csv_path, sep=";", encoding='utf-8')
+                except:
+                    df_item = pd.read_csv(csv_path, sep=";", encoding='latin-1')
+
                 df_item['Ruta_Carpeta'] = folder_path
                 lista_vehiculos.append(df_item)
-            except:
-                continue
+            except Exception as e:
+                st.sidebar.error(f"Error leyendo {folder_name}: {e}")
+        else:
+            # Esto nos dirá si falta el archivo en alguna carpeta
+            st.sidebar.write(f"⚠️ No se halló datos.csv en: {folder_name}")
 
-    if not lista_vehiculos: return pd.DataFrame()
-    df_total = pd.concat(lista_vehiculos, ignore_index=True)
-    
-    # Asegurar que las columnas numéricas sean tratadas como tal para el ordenamiento
-    cols_num = ['Precio_USD', 'Autonomia_km', 'Bateria_kWh', 'Potencia_CV']
-    for col in cols_num:
-        df_total[col] = pd.to_numeric(df_total[col], errors='coerce').fillna(0)
+    if not lista_vehiculos: 
+        return pd.DataFrame()
         
+    df_total = pd.concat(lista_vehiculos, ignore_index=True)
     return df_total
 
 df = cargar_base_de_datos()
