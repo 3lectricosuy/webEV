@@ -33,8 +33,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 # --- RUTAS ---
-BASE_PATH = r"C:\Users\Santiago\Desktop\Varios\Blog"
-VEHICULOS_PATH = os.path.join(BASE_PATH, "VEHICULOS")
+# Así debe quedar tu código:
+BASE_PATH = os.getcwd()  # Esto detecta automáticamente dónde está la carpeta del proyecto
+VEHICULOS_PATH = "VEHICULOS"
 
 # --- CARGA DE DATOS ---
 @st.cache_data
