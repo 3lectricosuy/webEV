@@ -8,8 +8,8 @@ col_logo, col_titulo = st.columns([1, 8]) # Ajusta los números para el tamaño
 
 with col_logo:
     # Asegúrate de que el nombre del archivo coincida (ej: logo.png)
-    if os.path.exists("Logo.jpeg"):
-        st.image("Logo.jpeg", width=80) 
+    if os.path.exists("Logo.png"):
+        st.image("Logo.png", width=80) 
     else:
         st.write("🚗") # Emoji de respaldo por si el logo no carga
 
