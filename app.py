@@ -37,7 +37,7 @@ st.markdown("""
 BASE_PATH = os.getcwd()  # Esto detecta automáticamente dónde está la carpeta del proyecto
 VEHICULOS_PATH = "VEHICULOS"
 
-@st.cache_data
+@st.cache_data(ttl=600)
 def cargar_base_de_datos():
     lista_vehiculos = []
     
@@ -82,8 +82,20 @@ def cargar_base_de_datos():
 
 df = cargar_base_de_datos()
 
-# --- TÍTULO ---
-st.title("🚗EléctricosUy")
+# --- TÍTULO CON LOGO ---
+col_logo, col_titulo = st.columns([1, 8])
+
+with col_logo:
+    # Intenta cargar Logo.png, si no Logo.jpg, si no el emoji
+    if os.path.exists("Logo.png"):
+        st.image("Logo.png", width=80)
+    elif os.path.exists("Logo.jpg"):
+        st.image("Logo.jpg", width=80)
+    else:
+        st.write("🚗")
+
+with col_titulo:
+    st.title("EléctricosUy")
 
 if df.empty:
     st.warning("⚠️ No se encontraron datos en 'VEHICULOS'.")
